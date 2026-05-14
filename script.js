@@ -8,7 +8,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     menuIcon.addEventListener('click', () => {
         navLinks.classList.toggle('show');
-        if (navLinks.classList.contains('show')) {
+        const open = navLinks.classList.contains('show');
+        menuIcon.setAttribute('aria-expanded', open ? 'true' : 'false');
+        menuIcon.setAttribute('aria-label', open ? 'Close navigation menu' : 'Open navigation menu');
+        if (open) {
             menuIconIcon.classList.remove('fa-bars');
             menuIconIcon.classList.add('fa-times');
         } else {
@@ -22,6 +25,8 @@ document.addEventListener('DOMContentLoaded', () => {
     links.forEach(link => {
         link.addEventListener('click', () => {
             navLinks.classList.remove('show');
+            menuIcon.setAttribute('aria-expanded', 'false');
+            menuIcon.setAttribute('aria-label', 'Open navigation menu');
             menuIconIcon.classList.remove('fa-times');
             menuIconIcon.classList.add('fa-bars');
         });
