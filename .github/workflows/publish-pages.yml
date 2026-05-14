@@ -1,25 +1,45 @@
-# Publishes site to branch `gh-pages`. Then on GitHub:
-# Settings → Pages → Build and deployment → Branch: gh-pages / folder: / (root)
-name: Publish GitHub Pages
+# Deploy static site via GitHub Actions (Settings → Pages → Source: GitHub Actions).
+# If Pages was never turned on, configure-pages uses enablement to create the site.
+name: Deploy GitHub Pages
 
 on:
   push:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
 
 jobs:
   deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Publish to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Configure Pages
+        uses: actions/configure-pages@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: .
-          force_orphan: true
-          exclude_assets: '.github'
+          enablement: true
+
+      - name: Prepare site files
+        run: |
+          mkdir -p _site
+          cp index.html style.css script.js _site/
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
