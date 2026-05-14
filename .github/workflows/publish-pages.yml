@@ -1,0 +1,25 @@
+# Publishes site to branch `gh-pages`. Then on GitHub:
+# Settings → Pages → Build and deployment → Branch: gh-pages / folder: / (root)
+name: Publish GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .
+          force_orphan: true
+          exclude_assets: '.github'
